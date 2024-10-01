@@ -5,7 +5,7 @@ def load_task():
     try:
         with open (file_name, 'r') as file:
             tasks = file.readlines()
-            return [task.strip() for task in tasks] # Remove the whitelines
+
     except FileNotFoundError:
         return [] # Return an empty list if the file doesn't exist
     
@@ -46,17 +46,19 @@ def mark_task():
     if len(todo_list) == 0:
         print("No task to mark as completed!\n")
         return 
-     
+    
     try: 
         task_num = int(input("Enter the number of task to mark completed: "))
         selected_task = todo_list[task_num - 1]
-        
+
         if "[✔]" in selected_task:
             print("This task is already marked as completed!\n")
         else:
-            todo_list[task_num - 1] = selected_task + " [✔]"
-            print("Task marked as completed!\n")
-        save_tasks()
+            crossed_out_task = f"~{selected_task}~ [✔]"
+            done_list.append(crossed_out_task)
+            todo_list.pop(task_num - 1)
+            print(f"Task '{selected_task}' moved to Done Section!\n")
+        save_tasks()  # Saving after marking the task
     except (ValueError, IndexError):
         print("Invalid task number. Try again!\n")
         
