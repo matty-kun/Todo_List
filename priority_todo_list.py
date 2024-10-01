@@ -1,18 +1,34 @@
 todo_list = []
+done_list = []
 file_name = "tasks.txt"
 
 def load_task():
     try:
         with open (file_name, 'r') as file:
             tasks = file.readlines()
-
+            todo = []
+            done = []
+            in_done_section = False
+            for task in tasks:
+                task = task.strip()
+                if task == "Done":
+                    in_done_section = True
+                elif in_done_section:
+                    done.append(task)
+                else: 
+                    todo.append(task)
+            return todo, done
     except FileNotFoundError:
-        return [] # Return an empty list if the file doesn't exist
+        return [], [] # Return an empty list if the file doesn't exist
     
 def save_tasks():
     with open(file_name, 'w') as file:
         for task in todo_list:
             file.write(task + "\n")
+        if done_list:
+            file.write("\nDone:\n") # Adds "Done" Section to the file
+            for task in done_list:
+                file.write(task + "\n")
             
 def show_tasks():
     if len(todo_list) == 0:
@@ -21,13 +37,18 @@ def show_tasks():
         print("\nTo_Do List:")
         for i, task in enumerate(todo_list, 1):
             print(f"{i}. {task}")
+            
+    if len(done_list) > 0:
+        print("\nDone:")
+        for i, task in enumerate(done_list, 1):
+            print(f"{i}. {task}")
     print()
     
 def add_task():
     task = input("Enter a new task: ")
     priority = input("Enter a task priority (high/medium/low): ").lower()
     todo_list.append(f"{task} ({priority})")
-    print(f"Task '{task}' added with {priority} to the list!\n")
+    print(f"Task '{task}' added with {priority} priority to the list!\n")
     save_tasks()
     
 def remove_task():
@@ -45,7 +66,7 @@ def mark_task():
     
     if len(todo_list) == 0:
         print("No task to mark as completed!\n")
-        return 
+        return
     
     try: 
         task_num = int(input("Enter the number of task to mark completed: "))
@@ -72,8 +93,8 @@ def menu():
     return choice
 
 def main():
-    global todo_list
-    todo_list = load_task()
+    global todo_list, done_list
+    todo_list, done_list = load_task()
     
     while True:
         choice = menu()
