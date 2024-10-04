@@ -23,10 +23,13 @@ def load_task():
     
 def save_tasks():
     with open(file_name, 'w') as file:
-        for task in todo_list:
-            file.write(task + "\n")
+        if todo_list:
+            for task in todo_list:
+                file.write(task + "\n")
             
         if done_list:
+            if todo_list:
+                file.write("\n")
             file.write("\nDone:\n") # Adds "Done" Section to the file
             for task in done_list:
                 file.write(task + "\n")
@@ -43,6 +46,8 @@ def show_tasks():
         print("\nDone:")
         for i, task in enumerate(done_list, 1):
             print(f"{i}. {task}")
+    else: 
+        print("\nNo tasks in the Done section!")
     print()
     
 def add_task():
@@ -54,8 +59,18 @@ def add_task():
     
 def remove_task():
     show_tasks()
+        
+    if len(todo_list) == 0:
+        print("No tasks to remove!\n")
+        return
+    
     try:
         task_num = int(input("Enter the number of the task to remove: "))
+        
+        if task_num < 1 or task_num > len(todo_list):
+            print(f"Invalid task number! Please choose a number between 1 and {len(todo_list)}.\n")
+            return
+        
         removed_task = todo_list.pop(task_num - 1)
         print(f"Task '{removed_task}' removed from the list!\n")
         save_tasks()
@@ -71,6 +86,11 @@ def mark_task():
     
     try: 
         task_num = int(input("Enter the number of task to mark completed: "))
+        
+        if task_num < 1 or task_num > len(todo_list):
+            print(f"Invalid task number. Please choose a number between 1 and {len(todo_list)}.\n")
+            return
+        
         selected_task = todo_list[task_num - 1]
 
         if "[✔]" in selected_task:
@@ -78,15 +98,14 @@ def mark_task():
         else:
             crossed_out_task = f"~{selected_task}~ [✔]"
             done_list.append(crossed_out_task)
-            
             todo_list.pop(task_num - 1)
             
             print(f"Task '{selected_task}' moved to Done Section!\n")
             
         save_tasks()  # Saving after marking the task
         
-    except (ValueError, IndexError):
-        print("Invalid task number. Try again!\n")
+    except (ValueError, IndexError) as e:
+        print(f"An error occured: {e}. Try again!\n")
 
 def edit_task():
     show_tasks()
@@ -103,13 +122,16 @@ def edit_task():
 def clear_task(section="all"):
     if section == "todo":
         todo_list.clear()
+        print("To-Do tasks cleared!\n")
     elif section == "done":
         done_list.clear()
+        print("Done tasks cleared!\n")
     else:
         todo_list.clear()
         done_list.clear()
+        print("All tasks cleared!\n")
     save_tasks()
-    print(f"Tasks in {section} section cleared!\n")
+    print(f"Tasks in {section if section != 'all' else 'all sections'} cleared!\n")
         
 def move_task_back():
     show_tasks()
@@ -119,7 +141,13 @@ def move_task_back():
         return
     try:
         task_num = int(input("Enter the number of the task to move to To-Do: "))
+        
+        if task_num < 1 or task_num > len(done_list):
+            print(f"Invalid task number. Please choose between 1 and {len(todo_list)}.\n")
+            return
+        
         task_to_move = done_list.pop(task_num - 1).replace("~", "").replace(" [✔]", "")
+        todo_list.append(task_to_move)
         print(f"Task '{task_to_move}' moved back to To-Do!\n")
         save_tasks()
     except (ValueError, IndexError):
