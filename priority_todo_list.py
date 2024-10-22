@@ -152,7 +152,22 @@ def move_task_back():
         save_tasks()
     except (ValueError, IndexError):
         print("Invalid task number. Try again!\n")
-    
+
+def search_task():
+    keyword = input("Enter a keyword to search: ").lower()
+    found_in_todo = [task for task in todo_list if keyword in task.lower()]
+    found_in_done = [task for task in done_list if keyword in task.lower()]
+    if found_in_todo:
+        print("Found in To-Do List:")
+        for task in found_in_todo:
+            print(task)
+    elif found_in_done:
+        print("Found in Done Section:")
+        for task in found_in_done:
+            print(task)
+            
+    if not found_in_todo and not found_in_todo:
+        print("No tasks found with that keyword.\n")
     
 def menu():
     print("1. View To-Do List")
@@ -162,7 +177,8 @@ def menu():
     print("5. Edit a Task")
     print("6. Clear all tasks")
     print("7. Move a Task Back")
-    print("8. Exit")
+    print("8. Search Task")
+    print("9. Exit")
     choice = input("Enter your choice: ")
     return choice
 
@@ -188,6 +204,8 @@ def main():
         elif choice == '7':
             move_task_back()
         elif choice == '8':
+            search_task()
+        elif choice == '9':
             print("\nExiting To-Do List Application. Goodbye!")
             break
         else:
